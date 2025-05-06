@@ -1,8 +1,6 @@
-
 ```bash
 go mod tidy
 ```
-
 
 ```bash
 go build -o bin/sproxy
@@ -13,6 +11,5 @@ bin/sproxy
 ```
 
 ```bash
-curl -H "X-API-Token: your-secure-api-token" http://localhost:8080/
+curl -H "Authorization: Bearer my-ollama-api-key" http://localhost:8080/
 ```
-

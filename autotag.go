@@ -1,5 +1,5 @@
 package main
 
-var AppVersion = "0.1.0"
-var AppRevision = "6211838"
+var AppVersion = "0.1.1"
+var AppRevision = "8e5972a"
 var AppBuildDate = "2025-05-07"

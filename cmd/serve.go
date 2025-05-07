@@ -167,9 +167,11 @@ func proxyHandler(target *url.URL) http.Handler {
 
 // ServeCmd represents the serve command
 var ServeCmd = &cobra.Command{
-	Use:   "serve",
-	Short: "start secure proxy server",
-	Long:  `start secure proxy server`,
+	Use:     "serve",
+	Aliases: []string{"s", "start"},
+	Short:   "start/serve/s secure proxy server",
+	Long:    `start secure proxy server, with Redis and static map support`,
+	Example: `sproxy serve`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Target server URL
 		target, ok := os.LookupEnv("SECURE_PROXY_TARGET")

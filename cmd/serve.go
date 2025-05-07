@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -11,8 +11,7 @@ import (
 	"strings"
 
 	"github.com/redis/go-redis/v9"
-
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/spf13/cobra"
 )
 
 var withStatic = false
@@ -166,31 +165,37 @@ func proxyHandler(target *url.URL) http.Handler {
 	})
 }
 
-func main() {
-	// Target server URL
-	target, ok := os.LookupEnv("SECURE_PROXY_TARGET")
-	if !ok {
-		log.Fatal("SECURE_PROXY_TARGET environment variable is required")
-	}
+// ServeCmd represents the serve command
+var ServeCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "start secure proxy server",
+	Long:  `start secure proxy server`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// Target server URL
+		target, ok := os.LookupEnv("SECURE_PROXY_TARGET")
+		if !ok {
+			log.Fatal("SECURE_PROXY_TARGET environment variable is required")
+		}
 
-	port, ok := os.LookupEnv("SECURE_PROXY_PORT")
-	if !ok {
-		log.Fatal("SECURE_PROXY_PORT environment variable is required")
-	}
+		port, ok := os.LookupEnv("SECURE_PROXY_PORT")
+		if !ok {
+			log.Fatal("SECURE_PROXY_PORT environment variable is required")
+		}
 
-	// Parse the target URL
-	targetURL, err := url.Parse(target)
-	if err != nil {
-		log.Fatalf("Invalid target URL: %v", err)
-	}
+		// Parse the target URL
+		targetURL, err := url.Parse(target)
+		if err != nil {
+			log.Fatalf("Invalid target URL: %v", err)
+		}
 
-	// Create the proxy handler
-	handler := proxyHandler(targetURL)
+		// Create the proxy handler
+		handler := proxyHandler(targetURL)
 
-	addr := fmt.Sprintf(":%s", port)
-	// Start the HTTP server
-	fmt.Println("Starting proxy server on ", addr)
-	if err := http.ListenAndServe(addr, handler); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+		addr := fmt.Sprintf(":%s", port)
+		// Start the HTTP server
+		fmt.Println("Starting proxy server on ", addr)
+		if err := http.ListenAndServe(addr, handler); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+	},
 }

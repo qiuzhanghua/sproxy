@@ -24,11 +24,15 @@ go build -o bin/sproxy
 ## Usage
 
 ### Set the API Key
-create a file named `.env` in the root directory of the project and add the following line to it:
+create a file named `.env` in the root directory of the project and add the following lines to it:
 ```text
-SECURE_PROXY_WITH_STATIC=True
-SECURE_PROXY_STATIC_MAP=key1=user1,key2=user2
+# use static keys for test only
+# SECURE_PROXY_WITH_STATIC=True
+# SECURE_PROXY_STATIC_MAP=key1=user1,key2=user2
+SECURE_PROXY_WITH_REDIS=True
+REDIS_URL=redis://localhost:6379/0
 ```
+
 ### Start the Proxy Server
 ```bash
 bin/sproxy
@@ -37,3 +41,7 @@ bin/sproxy
 ```bash
 curl -H "Authorization: Bearer key1" http://localhost:8080/
 ```
+
+
+## References
+- [Redis URL format](https://pkg.go.dev/github.com/redis/go-redis/v9#ParseURL)

@@ -68,12 +68,19 @@ func validateStatic(token string) (string, error) {
 }
 
 func initRedis() {
+	redisUrl, ok := os.LookupEnv("REDIS_URL")
+	if !ok {
+		fmt.Println("REDIS_URL not set. Running without Redis.")
+		return
+	}
+	opt, err := redis.ParseURL(redisUrl)
+	if err != nil {
+		fmt.Printf("Failed to parse Redis URL: %v\n", err)
+		return
+	}
+
 	// Initialize Redis client
-	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // Replace with your Redis server address
-		Password: "",               // Replace with your Redis password if any
-		DB:       0,                // Use default DB
-	})
+	RedisClient = redis.NewClient(opt)
 
 	// Ping the Redis server to ensure it's reachable
 	pong, err := RedisClient.Ping(ctx).Result()
@@ -161,7 +168,15 @@ func proxyHandler(target *url.URL) http.Handler {
 
 func main() {
 	// Target server URL
-	target := "http://localhost"
+	target, ok := os.LookupEnv("SECURE_PROXY_TARGET")
+	if !ok {
+		log.Fatal("SECURE_PROXY_TARGET environment variable is required")
+	}
+
+	port, ok := os.LookupEnv("SECURE_PROXY_PORT")
+	if !ok {
+		log.Fatal("SECURE_PROXY_PORT environment variable is required")
+	}
 
 	// Parse the target URL
 	targetURL, err := url.Parse(target)
@@ -172,9 +187,10 @@ func main() {
 	// Create the proxy handler
 	handler := proxyHandler(targetURL)
 
+	addr := fmt.Sprintf(":%s", port)
 	// Start the HTTP server
-	fmt.Println("Starting proxy server on :8080")
-	if err := http.ListenAndServe(":8080", handler); err != nil {
+	fmt.Println("Starting proxy server on ", addr)
+	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

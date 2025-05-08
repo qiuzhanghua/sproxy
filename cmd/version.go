@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/labstack/gommon/log"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +34,7 @@ func Inject(version, rev, date string) {
 	AppBuildDate = date
 	v, err := semver.NewVersion(AppVersion)
 	if err != nil {
-		log.Errorf("Error parsing version: %v", err)
+		log.Fatalf("Error parsing version: %v", err)
 		os.Exit(-1)
 	}
 	ThisVersion = v

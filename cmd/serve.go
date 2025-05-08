@@ -33,14 +33,14 @@ func init() {
 	if withRedis {
 		initRedis()
 	} else {
-		fmt.Println("Redis is not enabled. Running without Redis.")
+		log.Println("Redis is not enabled. Running without Redis.")
 	}
 }
 
 func initStatic() {
 	s, ok := os.LookupEnv("SECURE_PROXY_STATIC_MAP")
 	if !ok {
-		fmt.Println("SECURE_PROXY_STATIC_MAP not set. Running without static.")
+		log.Println("SECURE_PROXY_STATIC_MAP not set. Running without static.")
 		return
 	}
 	// Parse the static map from the environment variable
@@ -49,14 +49,14 @@ func initStatic() {
 	for _, entry := range entries {
 		parts := strings.SplitN(entry, "=", 2)
 		if len(parts) != 2 {
-			fmt.Printf("Invalid entry in SECURE_PROXY_STATIC_MAP: %s\n", entry)
+			log.Printf("Invalid entry in SECURE_PROXY_STATIC_MAP: %s\n", entry)
 			continue
 		}
 		path := strings.TrimSpace(parts[0])
 		target := strings.TrimSpace(parts[1])
 		staticMap[path] = target
 	}
-	fmt.Println("Static map initialized:", staticMap)
+	log.Println("Static map initialized:", staticMap)
 }
 
 func validateStatic(token string) (string, error) {
@@ -69,12 +69,12 @@ func validateStatic(token string) (string, error) {
 func initRedis() {
 	redisUrl, ok := os.LookupEnv("REDIS_URL")
 	if !ok {
-		fmt.Println("REDIS_URL not set. Running without Redis.")
+		log.Println("REDIS_URL not set. Running without Redis.")
 		return
 	}
 	opt, err := redis.ParseURL(redisUrl)
 	if err != nil {
-		fmt.Printf("Failed to parse Redis URL: %v\n", err)
+		log.Printf("Failed to parse Redis URL: %v\n", err)
 		return
 	}
 
@@ -86,7 +86,7 @@ func initRedis() {
 	if err != nil {
 		log.Fatalf("Failed to connect to Redis: %v", err)
 	}
-	fmt.Println("Connected to Redis:", pong)
+	log.Println("Connected to Redis:", pong)
 }
 
 func validateAPIKey(ctx context.Context, client *redis.Client, token string) (string, error) {
@@ -195,7 +195,7 @@ var ServeCmd = &cobra.Command{
 
 		addr := fmt.Sprintf(":%s", port)
 		// Start the HTTP server
-		fmt.Println("Starting proxy server on ", addr)
+		log.Println("Starting proxy server on ", addr)
 		if err := http.ListenAndServe(addr, handler); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
 		}

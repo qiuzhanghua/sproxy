@@ -19,6 +19,10 @@ This is a simple proxy server that forwards requests to an Ollama API. It adds a
 ## Build
 
 ```bash
+go install github.com/qiuzhanghua/autotag@latest
+```
+
+```bash
 go mod tidy
 ```
 
